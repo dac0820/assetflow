@@ -16,6 +16,7 @@ import {
   Menu,
   X,
   User,
+  Users,
   Sun,
   Moon
 } from "lucide-react";
@@ -48,6 +49,7 @@ export const DashboardLayout: React.FC = () => {
     { to: "/audits", label: "Compliance Audits", icon: ShieldCheck },
     { to: "/reports", label: "Reports", icon: FileText },
     { to: "/settings", label: "Settings", icon: Settings },
+    ...(user?.role === "admin" ? [{ to: "/users", label: "Users", icon: Users }] : []),
   ];
 
   return (

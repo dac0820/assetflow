@@ -6,6 +6,7 @@ import { z } from "zod";
 import { Box, Lock, Mail, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "../stores/authStore";
+import { mockAuthService } from "../services/mockService";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -32,30 +33,23 @@ export const Login: React.FC = () => {
 
   const onSubmit = async (data: LoginFields) => {
     setIsLoading(true);
-    // Mimic API request and authenticate with mock profiles or remote server
-    setTimeout(() => {
-      setIsLoading(false);
-      
-      // Seed roles default login checks
-      let role = "employee";
-      if (data.email.startsWith("admin")) {
-        role = "admin";
-      } else if (data.email.startsWith("manager")) {
-        role = "manager";
-      } else if (data.email.startsWith("auditor")) {
-        role = "auditor";
-      }
-      
-      setSession("mock-jwt-token-string", {
-        id: "c1a60fae-e2c7-4ebc-8854-3252199b0c20",
-        email: data.email,
-        role: role,
-        permissions: ["asset:read", "asset:create"]
-      });
-      
-      toast.success("Successfully logged in!");
-      navigate(from, { replace: true });
-    }, 1200);
+    const result = await mockAuthService.login(data.email, data.password);
+    setIsLoading(false);
+
+    if (!result) {
+      toast.error("Invalid email or password. Try admin@assetflow.com / admin123");
+      return;
+    }
+
+    setSession(result.token, {
+      id: result.user.id,
+      email: result.user.email,
+      role: result.user.role,
+      permissions: result.user.permissions,
+    });
+
+    toast.success(`Welcome, ${result.user.name}!`);
+    navigate(from, { replace: true });
   };
 
   return (

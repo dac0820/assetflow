@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Wrench, Plus, Search, BarChart2, Calendar,
+  Wrench, Plus, Filter, Search, BarChart2, Calendar,
   AlertTriangle, Clock, CheckCircle2, XCircle, Pause,
-  Play, DollarSign, User, Building2,
-  Zap, RefreshCw, TrendingUp,
-  ArrowRight, Loader2, X,
-  FileText, LayoutGrid, AlignJustify, Settings
+  Play, ChevronRight, Tag, DollarSign, User, Building2,
+  Zap, RefreshCw, List, Kanban, TrendingUp, Bell,
+  ArrowRight, Circle, Loader2, X, MessageSquare,
+  FileText, ThumbsUp, ThumbsDown, ChevronDown, Settings2
 } from "lucide-react";
-import {
-  maintenanceService,
+import type {
   MaintenanceSummary,
   MaintenanceAnalytics,
   MaintenanceStatus,
@@ -17,6 +16,8 @@ import {
   MaintenanceType,
   MaintenanceCreatePayload,
 } from "../services/api";
+import { maintenanceService } from "../services/dataService";
+import { useAuthStore } from "../stores/authStore";
 
 // ── CONSTANTS ────────────────────────────────────────────────────────────────
 
@@ -37,14 +38,14 @@ const STATUS_CONFIG: Record<MaintenanceStatus, { label: string; color: string; b
   qa_inspection:    { label: "QA Inspection",    color: "text-teal-400",  bg: "bg-teal-500/10",  icon: <Search className="h-3 w-3" /> },
   resolved:         { label: "Resolved",         color: "text-green-400", bg: "bg-green-500/10", icon: <CheckCircle2 className="h-3 w-3" /> },
   closed:           { label: "Closed",           color: "text-slate-400", bg: "bg-slate-500/10", icon: <XCircle className="h-3 w-3" /> },
-  rejected:         { label: "Rejected",         color: "text-red-400",   bg: "bg-red-500/10",   icon: <XCircle className="h-3 w-3" /> },
+  rejected:         { label: "Rejected",         color: "text-red-400",   bg: "bg-red-500/10",   icon: <ThumbsDown className="h-3 w-3" /> },
   cancelled:        { label: "Cancelled",        color: "text-slate-400", bg: "bg-slate-500/10", icon: <X className="h-3 w-3" /> },
   draft:            { label: "Draft",            color: "text-slate-400", bg: "bg-slate-500/10", icon: <FileText className="h-3 w-3" /> },
 };
 
 const TYPE_ICONS: Record<string, React.ReactNode> = {
   corrective:  <Wrench className="h-4 w-4" />,
-  preventive:  <Settings className="h-4 w-4" />,
+  preventive:  <Settings2 className="h-4 w-4" />,
   emergency:   <Zap className="h-4 w-4" />,
   inspection:  <Search className="h-4 w-4" />,
   calibration: <BarChart2 className="h-4 w-4" />,
@@ -180,6 +181,7 @@ interface MaintenanceCardProps {
 }
 
 function MaintenanceCard({ item, onAction, compact = false }: MaintenanceCardProps) {
+  const user = useAuthStore((state) => state.user);
   const priority = PRIORITY_CONFIG[item.priority];
   const statusCfg = STATUS_CONFIG[item.status];
   const [expanded, setExpanded] = useState(false);
@@ -270,7 +272,7 @@ function MaintenanceCard({ item, onAction, compact = false }: MaintenanceCardPro
         )}
 
         {/* Action buttons */}
-        {actions.length > 0 && (
+        {actions.length > 0 && (user?.role === "admin" || user?.role === "manager") && (
           <div className="flex flex-wrap gap-1.5">
             {actions.map((act) => (
               <button
@@ -683,6 +685,7 @@ function ListView({ items, onAction }: { items: MaintenanceSummary[]; onAction: 
 // ── MAIN PAGE ─────────────────────────────────────────────────────────────────
 
 export const Maintenance: React.FC = () => {
+  const user = useAuthStore((state) => state.user);
   const [items, setItems] = useState<MaintenanceSummary[]>([]);
   const [analytics, setAnalytics] = useState<MaintenanceAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -745,8 +748,8 @@ export const Maintenance: React.FC = () => {
           {/* View toggle */}
           <div className="flex items-center gap-0.5 p-1 bg-muted rounded-lg border border-border">
             {[
-              { key: "kanban",    icon: <LayoutGrid className="h-4 w-4" />,    label: "Kanban" },
-              { key: "list",      icon: <AlignJustify className="h-4 w-4" />,  label: "List" },
+              { key: "kanban",    icon: <Kanban className="h-4 w-4" />,    label: "Kanban" },
+              { key: "list",      icon: <List className="h-4 w-4" />,      label: "List" },
               { key: "analytics", icon: <BarChart2 className="h-4 w-4" />, label: "Analytics" },
             ].map(({ key, icon, label }) => (
               <button
@@ -763,14 +766,16 @@ export const Maintenance: React.FC = () => {
               </button>
             ))}
           </div>
-          <button
-            onClick={() => setShowCreate(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
-            id="create-maintenance-btn"
-          >
-            <Plus className="h-4 w-4" />
-            New Request
-          </button>
+          {(user?.role === "admin" || user?.role === "manager" || user?.role === "employee") && (
+            <button
+              onClick={() => setShowCreate(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
+              id="create-maintenance-btn"
+            >
+              <Plus className="h-4 w-4" />
+              New Request
+            </button>
+          )}
         </div>
       </div>
 

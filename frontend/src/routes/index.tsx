@@ -11,6 +11,8 @@ import { Maintenance } from "../pages/Maintenance";
 import { Audits } from "../pages/Audits";
 import { Reports } from "../pages/Reports";
 import { Settings } from "../pages/Settings";
+import { Users } from "../pages/Users";
+import { RoleGuard } from "../components/RoleGuard";
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -36,6 +38,14 @@ export const AppRoutes: React.FC = () => {
           <Route path="audits" element={<Audits />} />
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
+          <Route
+            path="users"
+            element={
+              <RoleGuard allowedRoles={["admin"]}>
+                <Users />
+              </RoleGuard>
+            }
+          />
         </Route>
 
         {/* Fallback redirect */}

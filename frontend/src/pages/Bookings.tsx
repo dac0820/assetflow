@@ -4,11 +4,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { bookingsService, assetService } from "../services/api";
+import { bookingsService, assetService } from "../services/dataService";
 import toast from "react-hot-toast";
+import { useAuthStore } from "../stores/authStore";
 
 const bookingFormSchema = z.object({
-  asset_id: z.string().uuid("Please select a valid Asset"),
+  asset_id: z.string().min(1, "Please select a valid Asset"),
   start_time: z.string().min(1, "Start time is required"),
   end_time: z.string().min(1, "End time is required"),
 });
@@ -17,6 +18,7 @@ type BookingFormFields = z.infer<typeof bookingFormSchema>;
 
 export const Bookings: React.FC = () => {
   const queryClient = useQueryClient();
+  const user = useAuthStore((state) => state.user);
   const [showWizard, setShowWizard] = useState(false);
 
   const mockBookings = [
@@ -98,18 +100,20 @@ export const Bookings: React.FC = () => {
           <h1 className="text-3xl font-bold tracking-tight">Resource Bookings</h1>
           <p className="text-sm text-muted-foreground mt-1">Temporary reservations calendar for shared workspace devices</p>
         </div>
-        <button
-          onClick={() => setShowWizard(!showWizard)}
-          className="py-2.5 px-4 bg-primary text-primary-foreground text-sm font-semibold rounded-lg shadow hover:bg-primary/90 flex items-center justify-center gap-2"
-        >
-          <Plus className="h-4 w-4" />
-          <span>New Reservation</span>
-        </button>
+        {(user?.role === "admin" || user?.role === "manager") && (
+          <button
+            onClick={() => setShowWizard(!showWizard)}
+            className="py-2.5 px-4 bg-primary text-primary-foreground text-sm font-semibold rounded-lg shadow hover:bg-primary/90 flex items-center justify-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            <span>New Reservation</span>
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Wizard Form/Sidebar */}
-        {showWizard && (
+        {showWizard && (user?.role === "admin" || user?.role === "manager") && (
           <div className="lg:col-span-1 p-6 rounded-xl border bg-card text-card-foreground shadow-sm space-y-4 h-fit">
             <h3 className="font-bold text-lg">Schedule Wizard</h3>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -191,7 +195,7 @@ export const Bookings: React.FC = () => {
                       <span className="text-xs font-semibold px-2.5 py-1 rounded bg-muted">
                         {booking.start} - {booking.end}
                       </span>
-                      {booking.status === "approved" && (
+                      {booking.status === "approved" && (user?.role === "admin" || user?.role === "manager") && (
                         <button
                           onClick={() => cancelMutation.mutate(booking.id)}
                           className="text-xs text-red-500 hover:underline px-2 py-1"

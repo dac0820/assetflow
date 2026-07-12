@@ -60,6 +60,13 @@ The platform is designed as a split-client architecture separating front-end pre
 
 ---
 
+| Role | Email | Password | Permissions |
+|------|-------|----------|-------------|
+| **Admin** | `admin@assetflow.com` | `admin123` | Full CRUD on assets, user management, settings write |
+| **Manager** | `manager@assetflow.com` | `manager123` | Read/create assets, handle approvals |
+| **Auditor** | `auditor@assetflow.com` | `auditor123` | Read assets, run audits, view reports |
+| **Employee** | `employee@assetflow.com` | `employee123` | Read-only asset view |
+
 ## 📂 Project Structure
 
 ```

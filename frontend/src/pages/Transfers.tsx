@@ -1,11 +1,13 @@
 import React from "react";
 import { ArrowRight, Check, X, Loader2 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { operationsService } from "../services/api";
+import { operationsService } from "../services/dataService";
 import toast from "react-hot-toast";
+import { useAuthStore } from "../stores/authStore";
 
 export const Transfers: React.FC = () => {
   const queryClient = useQueryClient();
+  const user = useAuthStore((state) => state.user);
 
   const mockTransfers = [
     { id: "1", name: "iPad Pro 12.9", from: "Warehouse A", to: "HQ Office", requestedBy: "Jack R.", date: "2026-07-10", status: "requested" },
@@ -62,7 +64,7 @@ export const Transfers: React.FC = () => {
                 <th className="p-4">Target Destination</th>
                 <th className="p-4">Requested By</th>
                 <th className="p-4">Date</th>
-                <th className="p-4 text-right">Actions</th>
+                {(user?.role === "admin" || user?.role === "manager") && <th className="p-4 text-right">Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -76,26 +78,28 @@ export const Transfers: React.FC = () => {
                   </td>
                   <td className="p-4">{req.requestedBy}</td>
                   <td className="p-4">{req.date}</td>
-                  <td className="p-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => actionMutation.mutate({ id: req.id, action: "APPROVED" })}
-                        disabled={actionMutation.isPending}
-                        className="p-1.5 bg-green-500/10 hover:bg-green-500/25 text-green-500 rounded-lg transition-colors"
-                        title="Approve Transfer"
-                      >
-                        <Check className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => actionMutation.mutate({ id: req.id, action: "REJECTED" })}
-                        disabled={actionMutation.isPending}
-                        className="p-1.5 bg-red-500/10 hover:bg-red-500/25 text-red-500 rounded-lg transition-colors"
-                        title="Reject Transfer"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </td>
+                  {(user?.role === "admin" || user?.role === "manager") && (
+                    <td className="p-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => actionMutation.mutate({ id: req.id, action: "APPROVED" })}
+                          disabled={actionMutation.isPending}
+                          className="p-1.5 bg-green-500/10 hover:bg-green-500/25 text-green-500 rounded-lg transition-colors"
+                          title="Approve Transfer"
+                        >
+                          <Check className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => actionMutation.mutate({ id: req.id, action: "REJECTED" })}
+                          disabled={actionMutation.isPending}
+                          className="p-1.5 bg-red-500/10 hover:bg-red-500/25 text-red-500 rounded-lg transition-colors"
+                          title="Reject Transfer"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

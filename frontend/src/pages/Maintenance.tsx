@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Wrench, Plus, Filter, Search, BarChart2, Calendar,
+  Wrench, Plus, Search, BarChart2, Calendar,
   AlertTriangle, Clock, CheckCircle2, XCircle, Pause,
-  Play, ChevronRight, Tag, DollarSign, User, Building2,
-  Zap, RefreshCw, List, Kanban, TrendingUp, Bell,
-  ArrowRight, Circle, Loader2, X, MessageSquare,
-  FileText, ThumbsUp, ThumbsDown, ChevronDown, Settings2
+  Play, DollarSign, User, Building2,
+  Zap, RefreshCw, TrendingUp,
+  ArrowRight, Loader2, X,
+  FileText, LayoutGrid, AlignJustify, Settings
 } from "lucide-react";
 import {
   maintenanceService,
@@ -37,14 +37,14 @@ const STATUS_CONFIG: Record<MaintenanceStatus, { label: string; color: string; b
   qa_inspection:    { label: "QA Inspection",    color: "text-teal-400",  bg: "bg-teal-500/10",  icon: <Search className="h-3 w-3" /> },
   resolved:         { label: "Resolved",         color: "text-green-400", bg: "bg-green-500/10", icon: <CheckCircle2 className="h-3 w-3" /> },
   closed:           { label: "Closed",           color: "text-slate-400", bg: "bg-slate-500/10", icon: <XCircle className="h-3 w-3" /> },
-  rejected:         { label: "Rejected",         color: "text-red-400",   bg: "bg-red-500/10",   icon: <ThumbsDown className="h-3 w-3" /> },
+  rejected:         { label: "Rejected",         color: "text-red-400",   bg: "bg-red-500/10",   icon: <XCircle className="h-3 w-3" /> },
   cancelled:        { label: "Cancelled",        color: "text-slate-400", bg: "bg-slate-500/10", icon: <X className="h-3 w-3" /> },
   draft:            { label: "Draft",            color: "text-slate-400", bg: "bg-slate-500/10", icon: <FileText className="h-3 w-3" /> },
 };
 
 const TYPE_ICONS: Record<string, React.ReactNode> = {
   corrective:  <Wrench className="h-4 w-4" />,
-  preventive:  <Settings2 className="h-4 w-4" />,
+  preventive:  <Settings className="h-4 w-4" />,
   emergency:   <Zap className="h-4 w-4" />,
   inspection:  <Search className="h-4 w-4" />,
   calibration: <BarChart2 className="h-4 w-4" />,
@@ -745,8 +745,8 @@ export const Maintenance: React.FC = () => {
           {/* View toggle */}
           <div className="flex items-center gap-0.5 p-1 bg-muted rounded-lg border border-border">
             {[
-              { key: "kanban",    icon: <Kanban className="h-4 w-4" />,    label: "Kanban" },
-              { key: "list",      icon: <List className="h-4 w-4" />,      label: "List" },
+              { key: "kanban",    icon: <LayoutGrid className="h-4 w-4" />,    label: "Kanban" },
+              { key: "list",      icon: <AlignJustify className="h-4 w-4" />,  label: "List" },
               { key: "analytics", icon: <BarChart2 className="h-4 w-4" />, label: "Analytics" },
             ].map(({ key, icon, label }) => (
               <button

@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Column, String, ForeignKey, DateTime, Date, Numeric
+from sqlalchemy import Column, String, ForeignKey, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from app.models.base import Base, AuditMixin
@@ -47,16 +47,5 @@ class Booking(Base, AuditMixin):
     asset = relationship("Asset", back_populates="bookings")
     employee = relationship("Employee")
 
-class Maintenance(Base, AuditMixin):
-    __tablename__ = "maintenance_requests"
-    
-    asset_id = Column(UUID(as_uuid=True), ForeignKey("assets.id", ondelete="CASCADE"), nullable=False)
-    assigned_technician_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
-    start_date = Column(Date, nullable=False)
-    end_date = Column(Date, nullable=True)
-    cost = Column(Numeric(15, 2), default=0.00, nullable=False)
-    notes = Column(String(512), nullable=True)
-    
-    # Relationships
-    asset = relationship("Asset", back_populates="maintenance_records")
-    technician = relationship("User", foreign_keys=[assigned_technician_id])
+
+

@@ -19,7 +19,11 @@ from app.models.asset import (            # noqa: F401
     Warranty, QRCode, AssetDocument, SystemSetting,
 )
 from app.models.operations import (       # noqa: F401
-    AssetAllocation, TransferRequest, Booking, Maintenance,
+    AssetAllocation, TransferRequest, Booking,
+)
+from app.models.maintenance import (      # noqa: F401
+    MaintenanceRequest, MaintenanceAttachment,
+    MaintenanceComment, MaintenanceStatusLog,
 )
 from app.models.audit import (            # noqa: F401
     AuditCycle, AuditResult,

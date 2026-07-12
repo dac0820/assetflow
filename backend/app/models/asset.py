@@ -34,7 +34,7 @@ class Asset(Base, AuditMixin):
     warranty = relationship("Warranty", uselist=False, back_populates="asset", cascade="all, delete-orphan")
     qr_code = relationship("QRCode", uselist=False, back_populates="asset", cascade="all, delete-orphan")
     documents = relationship("AssetDocument", back_populates="asset", cascade="all, delete-orphan")
-    maintenance_records = relationship("Maintenance", back_populates="asset", cascade="all, delete-orphan")
+    maintenance_records = relationship("MaintenanceRequest", back_populates="asset", cascade="all, delete-orphan")
     transfers = relationship("TransferRequest", back_populates="asset", cascade="all, delete-orphan")
     bookings = relationship("Booking", back_populates="asset", cascade="all, delete-orphan")
     audit_results = relationship("AuditResult", back_populates="asset", cascade="all, delete-orphan")
